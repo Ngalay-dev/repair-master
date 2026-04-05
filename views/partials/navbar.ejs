@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/dashboard">Mac Repair App</a>
+    <a class="navbar-brand" href="/dashboard">Repair Master</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -11,9 +11,11 @@
           <li class="nav-item">
             <a class="nav-link" href="/dashboard">Dashboard</a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="/repairs">Repairs</a>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="/repairs/search">Search Repair ID</a>
           </li>
@@ -24,15 +26,18 @@
             </li>
           <% } %>
 
+          <% if (user.role === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/users/new">Register User</a>
+            </li>
+          <% } %>
+
           <li class="nav-item">
             <a class="nav-link" href="/logout">Logout</a>
           </li>
         <% } else { %>
           <li class="nav-item">
             <a class="nav-link" href="/login">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/register">Register</a>
           </li>
         <% } %>
       </ul>
