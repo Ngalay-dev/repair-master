@@ -83,9 +83,9 @@ CREATE TABLE notifications (
 -- =========================
 INSERT INTO users (full_name, email, password, role)
 VALUES
-('Admin User', 'admin@uwcsea.edu.sg', 'admin123', 'admin'),
-('Onsite Engineer', 'engineer@uwcsea.edu.sg', 'engineer123', 'engineer'),
-('Coworker User', 'coworker@uwcsea.edu.sg', 'coworker123', 'coworker');
+('Admin User', 'admin@uwcsea.edu.sg', '$2b$12$z3e3GSkAYdNhums0TEDys.v.7a5RvBPOf9c8H4jH7DFX8hU/eFufm', 'admin'),
+('Onsite Engineer', 'engineer@uwcsea.edu.sg', '$2b$12$GQegT2dtSSqMLlF5p9XAEOasmHy3RXZjimP.7n6BfgxbePXxo3kDe', 'engineer'),
+('Coworker User', 'coworker@uwcsea.edu.sg', '$2b$12$fswPeVgPPz7tRJTjT.djLe/JFwxFAhsE/hyvsGVGwYxuoCcfqgD2e', 'coworker');
 
 -- =========================
 -- SAMPLE REPAIRS
