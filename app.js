@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const path = require('path');
 const express = require('express');
 const mysql = require('mysql2');
 const session = require('express-session');
@@ -45,19 +46,22 @@ connection.connect((err) => {
   console.log('Connected to MySQL database');
 });
 
-// Optional: handle unexpected DB disconnects
 connection.on('error', (err) => {
   console.error('MySQL connection error:', err.message);
 });
+
+const db = connection.promise();
 
 // -------------------------
 // App setup
 // -------------------------
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 
-// Needed when app is behind Railway / Render / proxy
+// Needed behind Render / proxy
 app.set('trust proxy', 1);
 
 app.use(session({
@@ -160,7 +164,7 @@ function validateAdminCreateUser(req, res, next) {
     return res.redirect('/users/new');
   }
 
-  if (!email.toLowerCase().endsWith(allowedDomain)) {
+  if (!email.toLowerCase().trim().endsWith(allowedDomain)) {
     req.flash('error', `Email must end with ${allowedDomain}`);
     req.flash('formData', req.body);
     return res.redirect('/users/new');
@@ -187,11 +191,12 @@ app.get('/', (req, res) => {
 // Auth routes
 // -------------------------
 app.get('/login', (req, res) => {
-  res.render('login');
+  return res.render('login');
 });
 
 app.post('/login', (req, res) => {
-  const { email, password } = req.body;
+  const email = req.body.email ? req.body.email.toLowerCase().trim() : '';
+  const password = req.body.password ? req.body.password.trim() : '';
 
   if (!email || !password) {
     req.flash('error', 'All fields are required.');
@@ -200,7 +205,7 @@ app.post('/login', (req, res) => {
 
   const sql = 'SELECT * FROM users WHERE email = ? LIMIT 1';
 
-  connection.query(sql, [email.toLowerCase().trim()], async (err, results) => {
+  connection.query(sql, [email], async (err, results) => {
     if (err) {
       console.error('Login error:', err);
       req.flash('error', 'Login failed.');
@@ -229,8 +234,16 @@ app.post('/login', (req, res) => {
         role: user.role
       };
 
-      req.flash('success', 'Login successful.');
-      return res.redirect('/dashboard');
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error('Session save error:', saveErr);
+          req.flash('error', 'Login failed.');
+          return res.redirect('/login');
+        }
+
+        req.flash('success', 'Login successful.');
+        return res.redirect('/dashboard');
+      });
     } catch (compareError) {
       console.error('Password compare error:', compareError);
       req.flash('error', 'Login failed.');
@@ -240,7 +253,14 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  req.session.destroy(() => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+      req.flash('error', 'Failed to log out.');
+      return res.redirect('/dashboard');
+    }
+
+    res.clearCookie('connect.sid');
     return res.redirect('/login');
   });
 });
@@ -248,70 +268,36 @@ app.get('/logout', (req, res) => {
 // -------------------------
 // Dashboard
 // -------------------------
-app.get('/dashboard', checkAuthenticated, (req, res) => {
-  const totalSql = "SELECT COUNT(*) AS total FROM repairs";
-  const waitingSql = "SELECT COUNT(*) AS total FROM repairs WHERE status = 'Waiting for approval'";
-  const progressSql = "SELECT COUNT(*) AS total FROM repairs WHERE status = 'In progress'";
-  const finishedSql = "SELECT COUNT(*) AS total FROM repairs WHERE status = 'Finished'";
+app.get('/dashboard', checkAuthenticated, async (req, res) => {
+  try {
+    const [
+      [totalResult],
+      [waitingResult],
+      [progressResult],
+      [finishedResult]
+    ] = await Promise.all([
+      db.query('SELECT COUNT(*) AS total FROM repairs'),
+      db.query("SELECT COUNT(*) AS total FROM repairs WHERE status = 'Waiting for approval'"),
+      db.query("SELECT COUNT(*) AS total FROM repairs WHERE status = 'In progress'"),
+      db.query("SELECT COUNT(*) AS total FROM repairs WHERE status = 'Finished'")
+    ]);
 
-  connection.query(totalSql, (err1, totalResult) => {
-    if (err1) {
-      console.error(err1);
-      req.flash('error', 'Failed to load dashboard.');
-      return res.render('index', {
-        totalRepairs: 0,
-        waitingCount: 0,
-        progressCount: 0,
-        finishedCount: 0
-      });
-    }
-
-    connection.query(waitingSql, (err2, waitingResult) => {
-      if (err2) {
-        console.error(err2);
-        req.flash('error', 'Failed to load dashboard.');
-        return res.render('index', {
-          totalRepairs: 0,
-          waitingCount: 0,
-          progressCount: 0,
-          finishedCount: 0
-        });
-      }
-
-      connection.query(progressSql, (err3, progressResult) => {
-        if (err3) {
-          console.error(err3);
-          req.flash('error', 'Failed to load dashboard.');
-          return res.render('index', {
-            totalRepairs: 0,
-            waitingCount: 0,
-            progressCount: 0,
-            finishedCount: 0
-          });
-        }
-
-        connection.query(finishedSql, (err4, finishedResult) => {
-          if (err4) {
-            console.error(err4);
-            req.flash('error', 'Failed to load dashboard.');
-            return res.render('index', {
-              totalRepairs: 0,
-              waitingCount: 0,
-              progressCount: 0,
-              finishedCount: 0
-            });
-          }
-
-          return res.render('index', {
-            totalRepairs: totalResult[0].total,
-            waitingCount: waitingResult[0].total,
-            progressCount: progressResult[0].total,
-            finishedCount: finishedResult[0].total
-          });
-        });
-      });
+    return res.render('index', {
+      totalRepairs: totalResult[0].total,
+      waitingCount: waitingResult[0].total,
+      progressCount: progressResult[0].total,
+      finishedCount: finishedResult[0].total
     });
-  });
+  } catch (err) {
+    console.error('Dashboard error:', err);
+    req.flash('error', 'Failed to load dashboard.');
+    return res.render('index', {
+      totalRepairs: 0,
+      waitingCount: 0,
+      progressCount: 0,
+      finishedCount: 0
+    });
+  }
 });
 
 // -------------------------
@@ -319,7 +305,7 @@ app.get('/dashboard', checkAuthenticated, (req, res) => {
 // -------------------------
 app.get('/users/new', checkAuthenticated, checkAdmin, (req, res) => {
   const formData = req.flash('formData')[0] || {};
-  res.render('register', { formData });
+  return res.render('register', { formData });
 });
 
 app.post('/users/new', checkAuthenticated, checkAdmin, validateAdminCreateUser, async (req, res) => {
@@ -333,23 +319,27 @@ app.post('/users/new', checkAuthenticated, checkAdmin, validateAdminCreateUser, 
       VALUES (?, ?, ?, ?)
     `;
 
-    connection.query(sql, [full_name, email.toLowerCase().trim(), hashedPassword, role], (err) => {
-      if (err) {
-        console.error('Create user error:', err);
+    connection.query(
+      sql,
+      [full_name.trim(), email.toLowerCase().trim(), hashedPassword, role],
+      (err) => {
+        if (err) {
+          console.error('Create user error:', err);
 
-        if (err.code === 'ER_DUP_ENTRY') {
-          req.flash('error', 'That email already exists.');
-        } else {
-          req.flash('error', 'Failed to create user.');
+          if (err.code === 'ER_DUP_ENTRY') {
+            req.flash('error', 'That email already exists.');
+          } else {
+            req.flash('error', 'Failed to create user.');
+          }
+
+          req.flash('formData', req.body);
+          return res.redirect('/users/new');
         }
 
-        req.flash('formData', req.body);
-        return res.redirect('/users/new');
+        req.flash('success', 'User created successfully.');
+        return res.redirect('/dashboard');
       }
-
-      req.flash('success', 'User created successfully.');
-      return res.redirect('/dashboard');
-    });
+    );
   } catch (hashError) {
     console.error('Hash error:', hashError);
     req.flash('error', 'Failed to create user.');
@@ -378,7 +368,7 @@ app.get('/repairs', checkAuthenticated, (req, res) => {
 });
 
 app.get('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
-  res.render('addRepair');
+  return res.render('addRepair');
 });
 
 app.post('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
@@ -416,12 +406,12 @@ app.post('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
       repairSql,
       [
         repairId,
-        client_name,
-        client_email,
+        client_name.trim(),
+        client_email.trim(),
         laptop_brand || 'Apple',
-        laptop_model,
+        laptop_model.trim(),
         serial_number || null,
-        issue_description,
+        issue_description.trim(),
         status,
         storage_location || null,
         req.session.user.id,
@@ -481,13 +471,13 @@ app.post('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
 });
 
 app.get('/repairs/search', checkAuthenticated, (req, res) => {
-  res.render('category', {
+  return res.render('category', {
     repair: null
   });
 });
 
 app.post('/repairs/search', checkAuthenticated, (req, res) => {
-  const { repair_id } = req.body;
+  const repair_id = req.body.repair_id ? req.body.repair_id.trim() : '';
 
   if (!repair_id) {
     req.flash('error', 'Please enter a repair ID.');
@@ -496,7 +486,7 @@ app.post('/repairs/search', checkAuthenticated, (req, res) => {
 
   const sql = 'SELECT * FROM repairs WHERE repair_id = ?';
 
-  connection.query(sql, [repair_id.trim()], (err, results) => {
+  connection.query(sql, [repair_id], (err, results) => {
     if (err) {
       console.error(err);
       req.flash('error', 'Search failed.');
@@ -578,12 +568,12 @@ app.post('/repairs/edit/:id', checkAuthenticated, checkStaff, (req, res) => {
     connection.query(
       updateSql,
       [
-        client_name,
-        client_email,
+        client_name.trim(),
+        client_email.trim(),
         laptop_brand || 'Apple',
-        laptop_model,
+        laptop_model.trim(),
         serial_number || null,
-        issue_description,
+        issue_description.trim(),
         status,
         storage_location || null,
         req.session.user.id,
@@ -695,6 +685,21 @@ app.get('/repairs/:id', checkAuthenticated, (req, res) => {
       });
     });
   });
+});
+
+// -------------------------
+// 404
+// -------------------------
+app.use((req, res) => {
+  return res.status(404).send('Page not found');
+});
+
+// -------------------------
+// Error handler
+// -------------------------
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  return res.status(500).send('Internal Server Error');
 });
 
 // -------------------------

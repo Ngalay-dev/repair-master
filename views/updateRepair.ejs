@@ -3,55 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Repair - Repair Master</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <title>Edit Repair - Mac Repair App</title>
 </head>
 <body>
-  <%- include('views/partials/navbar', { user: user }) %>
+  <%- include('partials/navbar', { user: user }) %>
 
   <div class="container mt-4">
     <h2 class="mb-4">Edit Repair Record</h2>
 
+    <% if (messages && messages.length > 0) { %>
+      <div class="alert alert-success">
+        <% messages.forEach(function(message) { %>
+          <p class="mb-0"><%= message %></p>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <% if (errors && errors.length > 0) { %>
+      <div class="alert alert-danger">
+        <% errors.forEach(function(error) { %>
+          <p class="mb-0"><%= error %></p>
+        <% }); %>
+      </div>
+    <% } %>
+
     <form action="/repairs/edit/<%= repair.id %>" method="POST" class="mx-auto" style="max-width: 700px;">
       <div class="mb-3">
-        <label class="form-label">Repair ID</label>
-        <input type="text" class="form-control" value="<%= repair.repair_id %>" readonly>
+        <label for="repair_id" class="form-label">Repair ID</label>
+        <input type="text" id="repair_id" class="form-control" value="<%= repair.repair_id %>" readonly>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Client Name</label>
-        <input type="text" class="form-control" name="client_name" value="<%= repair.client_name %>" required>
+        <label for="client_name" class="form-label">Client Name</label>
+        <input type="text" id="client_name" class="form-control" name="client_name" value="<%= repair.client_name %>" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Client Email</label>
-        <input type="email" class="form-control" name="client_email" value="<%= repair.client_email %>" required>
+        <label for="client_email" class="form-label">Client Email</label>
+        <input type="email" id="client_email" class="form-control" name="client_email" value="<%= repair.client_email %>" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Laptop Brand</label>
-        <input type="text" class="form-control" name="laptop_brand" value="<%= repair.laptop_brand %>">
+        <label for="laptop_brand" class="form-label">Laptop Brand</label>
+        <input type="text" id="laptop_brand" class="form-control" name="laptop_brand" value="<%= repair.laptop_brand %>">
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Laptop Model</label>
-        <input type="text" class="form-control" name="laptop_model" value="<%= repair.laptop_model %>" required>
+        <label for="laptop_model" class="form-label">Laptop Model</label>
+        <input type="text" id="laptop_model" class="form-control" name="laptop_model" value="<%= repair.laptop_model %>" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Serial Number</label>
-        <input type="text" class="form-control" name="serial_number" value="<%= repair.serial_number %>">
+        <label for="serial_number" class="form-label">Serial Number</label>
+        <input type="text" id="serial_number" class="form-control" name="serial_number" value="<%= repair.serial_number || '' %>">
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Issue Description</label>
-        <textarea class="form-control" name="issue_description" rows="4" required><%= repair.issue_description %></textarea>
+        <label for="issue_description" class="form-label">Issue Description</label>
+        <textarea id="issue_description" class="form-control" name="issue_description" rows="4" required><%= repair.issue_description %></textarea>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Status</label>
-        <select class="form-control" name="status" required>
+        <label for="status" class="form-label">Status</label>
+        <select id="status" class="form-select" name="status" required>
           <option value="Waiting for approval" <%= repair.status === 'Waiting for approval' ? 'selected' : '' %>>Waiting for approval</option>
           <option value="In progress" <%= repair.status === 'In progress' ? 'selected' : '' %>>In progress</option>
           <option value="Finished" <%= repair.status === 'Finished' ? 'selected' : '' %>>Finished</option>
@@ -59,17 +74,25 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Storage Location</label>
-        <input type="text" class="form-control" name="storage_location" value="<%= repair.storage_location %>">
+        <label for="storage_location" class="form-label">Storage Location</label>
+        <input type="text" id="storage_location" class="form-control" name="storage_location" value="<%= repair.storage_location || '' %>">
       </div>
 
       <div class="mb-3">
-        <label class="form-label">New Note</label>
-        <textarea class="form-control" name="note_text" rows="3" placeholder="Add update note here"></textarea>
+        <label for="note_text" class="form-label">New Note</label>
+        <textarea
+          id="note_text"
+          class="form-control"
+          name="note_text"
+          rows="3"
+          placeholder="Add update note here"
+        ></textarea>
       </div>
 
       <button type="submit" class="btn btn-warning">Update Repair</button>
     </form>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
