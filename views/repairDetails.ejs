@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <title>Repair Details - Mac Repair App</title>
+</head>
+<body>
+  <%- include('navbar', { user: user }) %>
+
+  <div class="container mt-4">
+    <h2 class="mb-4">Repair Details</h2>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <p><strong>Repair ID:</strong> <%= repair.repair_id %></p>
+        <p><strong>Client Name:</strong> <%= repair.client_name %></p>
+        <p><strong>Client Email:</strong> <%= repair.client_email %></p>
+        <p><strong>Laptop Brand:</strong> <%= repair.laptop_brand %></p>
+        <p><strong>Laptop Model:</strong> <%= repair.laptop_model %></p>
+        <p><strong>Serial Number:</strong> <%= repair.serial_number || '-' %></p>
+        <p><strong>Issue Description:</strong> <%= repair.issue_description %></p>
+        <p><strong>Status:</strong> <%= repair.status %></p>
+        <p><strong>Storage Location:</strong> <%= repair.storage_location || '-' %></p>
+        <p><strong>Created At:</strong> <%= repair.created_at %></p>
+        <p><strong>Updated At:</strong> <%= repair.updated_at %></p>
+      </div>
+    </div>
+
+    <h4>Repair Notes</h4>
+    <% if (notes.length === 0) { %>
+      <p>No notes yet.</p>
+    <% } else { %>
+      <ul class="list-group mb-4">
+        <% notes.forEach(note => { %>
+          <li class="list-group-item">
+            <strong>Status:</strong> <%= note.status_at_time %><br>
+            <strong>Note:</strong> <%= note.note_text %><br>
+            <small>By <%= note.full_name %> on <%= note.created_at %></small>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <h4>Status History</h4>
+    <% if (history.length === 0) { %>
+      <p>No history yet.</p>
+    <% } else { %>
+      <ul class="list-group mb-4">
+        <% history.forEach(item => { %>
+          <li class="list-group-item">
+            <strong>From:</strong> <%= item.old_status || 'None' %>
+            → <strong>To:</strong> <%= item.new_status %><br>
+            <strong>Note:</strong> <%= item.change_note || '-' %><br>
+            <small>By <%= item.full_name %> on <%= item.changed_at %></small>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <a href="/repairs" class="btn btn-secondary">Back to Repairs</a>
+    <% if (user.role === 'admin' || user.role === 'engineer') { %>
+      <a href="/repairs/edit/<%= repair.id %>" class="btn btn-warning">Edit Repair</a>
+    <% } %>
+  </div>
+</body>
+</html>
