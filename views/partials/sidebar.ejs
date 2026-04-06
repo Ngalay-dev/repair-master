@@ -1,0 +1,302 @@
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #7c94b8 0%, #b1bbc8 55%, #d9d9d8 100%);
+    color: #233558;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  .sidebar {
+    width: 280px;
+    background-color: #2a4d88;
+    color: #f5f7fa;
+    padding: 2rem 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(42, 77, 136, 0.28);
+    z-index: 1000;
+  }
+
+  .sidebar-logo {
+    padding: 0 1.5rem 2rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-logo h1 {
+    font-family: "Gothic", Arial, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #f5f7fa;
+  }
+
+  .sidebar-menu {
+    list-style: none;
+  }
+
+  .sidebar-menu-item {
+    margin: 0.5rem 0;
+  }
+
+  .sidebar-menu-item a {
+    display: flex;
+    align-items: center;
+    padding: 0.95rem 1.5rem;
+    color: rgba(245, 247, 250, 0.85);
+    text-decoration: none;
+    transition: all 0.24s ease;
+    border-left: 3px solid transparent;
+    font-size: 0.95rem;
+  }
+
+  .sidebar-menu-item a:hover,
+  .sidebar-menu-item a.active {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-left-color: #7eb3ff;
+    color: #ffffff;
+    padding-left: 1.35rem;
+  }
+
+  .sidebar-menu-item.category {
+    margin-top: 1.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .sidebar-menu-item.category a {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(245, 247, 250, 0.55);
+    font-weight: 600;
+  }
+
+  .sidebar-menu-item.category a:hover {
+    background-color: transparent;
+    border-left-color: transparent;
+  }
+
+  .main-content {
+    margin-left: 280px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .top-bar {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 1.2rem 2rem;
+    box-shadow: 0 2px 12px rgba(42, 77, 136, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .top-bar-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2a4d88;
+  }
+
+  .top-bar-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: #233558;
+  }
+
+  .page-container {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  .page-container > h1:first-child,
+  .page-container > h2:first-child {
+    margin-top: 0;
+  }
+
+  .page-container .container,
+  .page-container .container-fluid {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .page-container > form {
+    max-width: 900px;
+  }
+
+  .card,
+  .page-card {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(42, 77, 136, 0.14);
+    border-radius: 1rem;
+    box-shadow: 0 10px 28px rgba(42, 77, 136, 0.12);
+    padding: 1.8rem;
+  }
+
+  .btn {
+    border-radius: 0.65rem;
+    padding: 0.7rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background-color: #2a4d88;
+    border-color: #243f71;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #223666;
+    border-color: #1d3158;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(42, 77, 136, 0.24);
+  }
+
+  .btn-outline-primary {
+    border: 1.5px solid #2a4d88;
+    color: #2a4d88;
+    background-color: transparent;
+  }
+
+  .btn-outline-primary:hover {
+    background-color: rgba(42, 77, 136, 0.08);
+  }
+
+  .btn-sm {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.87rem;
+  }
+
+  .form-control {
+    border: 1px solid rgba(42, 77, 136, 0.16);
+    border-radius: 0.75rem;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .form-control:focus {
+    border-color: #2a4d88;
+    box-shadow: 0 0 0 0.2rem rgba(42, 77, 136, 0.25);
+  }
+
+  .table {
+    border-radius: 0.8rem;
+    overflow: hidden;
+  }
+
+  .table thead {
+    background-color: rgba(42, 77, 136, 0.1);
+    font-weight: 600;
+    color: #2a4d88;
+  }
+
+  .alert {
+    border-radius: 0.8rem;
+    border: none;
+  }
+
+  .alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #1d5c3e;
+  }
+
+  .alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #7a2a2a;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 240px;
+      margin-left: -240px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.show {
+      margin-left: 0;
+    }
+
+    .main-content {
+      margin-left: 0;
+    }
+
+    .page-container {
+      padding: 1.5rem;
+    }
+
+    .card,
+    .page-card {
+      padding: 1.2rem;
+    }
+  }
+</style>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Repair Master</h1>
+  </div>
+
+  <ul class="sidebar-menu">
+    <li class="sidebar-menu-item">
+      <a href="/dashboard" class="<%= currentPage === 'dashboard' ? 'active' : '' %>">📊 Dashboard</a>
+    </li>
+
+    <li class="sidebar-menu-item category">
+      <a href="#">REPAIRS</a>
+    </li>
+    <li class="sidebar-menu-item">
+      <a href="/repairs" class="<%= currentPage === 'repairs' ? 'active' : '' %>">View Repairs</a>
+    </li>
+    <li class="sidebar-menu-item">
+      <a href="/repairs/search" class="<%= currentPage === 'search' ? 'active' : '' %>">Search Repair ID</a>
+    </li>
+
+    <% if (user && (user.role === 'admin' || user.role === 'engineer')) { %>
+      <li class="sidebar-menu-item">
+        <a href="/repairs/add" class="<%= currentPage === 'addRepair' ? 'active' : '' %>">+ Add Repair</a>
+      </li>
+    <% } %>
+
+    <% if (user && user.role === 'admin') { %>
+      <li class="sidebar-menu-item category">
+        <a href="#">ADMIN</a>
+      </li>
+      <li class="sidebar-menu-item">
+        <a href="/users/new" class="<%= currentPage === 'registerUser' ? 'active' : '' %>">Register User</a>
+      </li>
+    <% } %>
+
+    <li class="sidebar-menu-item category">
+      <a href="#">ACCOUNT</a>
+    </li>
+    <li class="sidebar-menu-item">
+      <a href="/logout" class="<%= currentPage === 'logout' ? 'active' : '' %>">🚪 Logout</a>
+    </li>
+  </ul>
+</aside>
+
+<div class="main-content">
+  <div class="top-bar">
+    <h2 class="top-bar-title"><%= pageTitle %></h2>
+    <div class="top-bar-user">
+      <% if (user) { %>
+        <span>Welcome, <strong><%= user.name || user.email %></strong></span>
+      <% } %>
+    </div>
+  </div>
+  <div class="page-container">

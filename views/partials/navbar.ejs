@@ -1,53 +1,90 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/dashboard">Repair Master</a>
+<style>
+  body {
+    background: linear-gradient(135deg, #7c94b8 0%, #b1bbc8 55%, #d9d9d8 100%);
+    min-height: 100vh;
+    color: #233558;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  .card,
+  .page-card {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(42, 77, 136, 0.14);
+    border-radius: 1rem;
+    box-shadow: 0 10px 40px rgba(42, 77, 136, 0.16);
+  }
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+  .btn {
+    border-radius: 0.65rem;
+    padding: 0.7rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
 
-        <% if (user) { %>
+  .btn-primary {
+    background-color: #2a4d88;
+    border-color: #243f71;
+    color: white;
+  }
 
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboard">Dashboard</a>
-          </li>
+  .btn-primary:hover {
+    background-color: #223666;
+    border-color: #1d3158;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(42, 77, 136, 0.24);
+  }
 
-          <li class="nav-item">
-            <a class="nav-link" href="/repairs">Repairs</a>
-          </li>
+  .form-control {
+    border: 1px solid rgba(42, 77, 136, 0.16);
+    border-radius: 0.75rem;
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
 
-          <li class="nav-item">
-            <a class="nav-link" href="/repairs/search">Search Repair ID</a>
-          </li>
+  .form-control:focus {
+    border-color: #2a4d88;
+    box-shadow: 0 0 0 0.2rem rgba(42, 77, 136, 0.25);
+  }
 
-          <% if (user && (user.role === 'admin' || user.role === 'engineer')) { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/repairs/add">Add Repair</a>
-            </li>
-          <% } %>
+  .form-label {
+    color: #233558;
+    font-weight: 500;
+  }
 
-          <% if (user && user.role === 'admin') { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/users/new">Register User</a>
-            </li>
-          <% } %>
+  .alert {
+    border-radius: 0.8rem;
+    border: none;
+  }
 
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
-          </li>
+  .alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #1d5c3e;
+  }
 
-        <% } else { %>
+  .alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #7a2a2a;
+  }
 
-          <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
-          </li>
+  .auth-container {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(42, 77, 136, 0.14);
+    border-radius: 1rem;
+    box-shadow: 0 10px 40px rgba(42, 77, 136, 0.16);
+    padding: 2.5rem;
+    max-width: 500px;
+    width: 100%;
+  }
 
-        <% } %>
+  .auth-container h1 {
+    color: #2a4d88;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.75rem;
+  }
+</style>
 
-      </ul>
-    </div>
-  </div>
-</nav>
+<div class="auth-container">

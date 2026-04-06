@@ -83,6 +83,11 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.messages = req.flash('success');
   res.locals.errors = req.flash('error');
+  
+  // Set default page metadata
+  res.locals.pageTitle = 'Repair Master';
+  res.locals.currentPage = 'dashboard';
+  
   next();
 });
 
@@ -282,6 +287,8 @@ app.get('/dashboard', checkAuthenticated, async (req, res) => {
       db.query("SELECT COUNT(*) AS total FROM repairs WHERE status = 'Finished'")
     ]);
 
+    res.locals.pageTitle = 'Dashboard';
+    res.locals.currentPage = 'dashboard';
     return res.render('index', {
       totalRepairs: totalResult[0].total,
       waitingCount: waitingResult[0].total,
@@ -291,6 +298,8 @@ app.get('/dashboard', checkAuthenticated, async (req, res) => {
   } catch (err) {
     console.error('Dashboard error:', err);
     req.flash('error', 'Failed to load dashboard.');
+    res.locals.pageTitle = 'Dashboard';
+    res.locals.currentPage = 'dashboard';
     return res.render('index', {
       totalRepairs: 0,
       waitingCount: 0,
@@ -305,6 +314,8 @@ app.get('/dashboard', checkAuthenticated, async (req, res) => {
 // -------------------------
 app.get('/users/new', checkAuthenticated, checkAdmin, (req, res) => {
   const formData = req.flash('formData')[0] || {};
+  res.locals.pageTitle = 'Register User';
+  res.locals.currentPage = 'registerUser';
   return res.render('register', { formData });
 });
 
@@ -361,6 +372,8 @@ app.get('/repairs', checkAuthenticated, (req, res) => {
       return res.redirect('/dashboard');
     }
 
+    res.locals.pageTitle = 'Repair Records';
+    res.locals.currentPage = 'repairs';
     return res.render('inventory', {
       repairs: results
     });
@@ -368,6 +381,8 @@ app.get('/repairs', checkAuthenticated, (req, res) => {
 });
 
 app.get('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
+  res.locals.pageTitle = 'Add Repair';
+  res.locals.currentPage = 'addRepair';
   return res.render('addRepair');
 });
 
@@ -471,6 +486,8 @@ app.post('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
 });
 
 app.get('/repairs/search', checkAuthenticated, (req, res) => {
+  res.locals.pageTitle = 'Search Repair';
+  res.locals.currentPage = 'search';
   return res.render('category', {
     repair: null
   });
@@ -498,6 +515,8 @@ app.post('/repairs/search', checkAuthenticated, (req, res) => {
       return res.redirect('/repairs/search');
     }
 
+    res.locals.pageTitle = 'Search Repair';
+    res.locals.currentPage = 'search';
     return res.render('category', {
       repair: results[0]
     });
@@ -519,6 +538,8 @@ app.get('/repairs/edit/:id', checkAuthenticated, checkStaff, (req, res) => {
       return res.redirect('/repairs');
     }
 
+    res.locals.pageTitle = 'Edit Repair';
+    res.locals.currentPage = 'repairs';
     return res.render('updateRepair', {
       repair: results[0]
     });
@@ -677,6 +698,8 @@ app.get('/repairs/:id', checkAuthenticated, (req, res) => {
           return res.redirect('/repairs');
         }
 
+        res.locals.pageTitle = 'Repair Details';
+        res.locals.currentPage = 'repairs';
         return res.render('repairDetails', {
           repair: repairResults[0],
           notes: noteResults,
