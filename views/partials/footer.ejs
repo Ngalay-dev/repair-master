@@ -1,2 +1,35 @@
   </div>
 </div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('show');
+    }
+  }
+
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', function(event) {
+    const sidebar = document.querySelector('.sidebar');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    const isDesktop = window.matchMedia('(min-width: 577px)').matches;
+    
+    if (!isDesktop && sidebar && toggle && 
+        !sidebar.contains(event.target) && 
+        !toggle.contains(event.target)) {
+      sidebar.classList.remove('show');
+    }
+  });
+
+  // Close sidebar when clicking a link on mobile
+  document.querySelectorAll('.sidebar-menu-item a').forEach(link => {
+    link.addEventListener('click', function() {
+      const sidebar = document.querySelector('.sidebar');
+      const isDesktop = window.matchMedia('(min-width: 577px)').matches;
+      if (!isDesktop && sidebar) {
+        sidebar.classList.remove('show');
+      }
+    });
+  });
+</script>
