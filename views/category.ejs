@@ -51,6 +51,7 @@
           <p><strong>Laptop:</strong> <%= repair.laptop_brand %> <%= repair.laptop_model %></p>
           <p><strong>Status:</strong> <%= repair.status %></p>
           <p><strong>Storage Location:</strong> <%= repair.storage_location || '-' %></p>
+          <p><strong>Device Loan:</strong> <%= repair.device_loan || '-' %></p>
           <a href="/repairs/<%= repair.id %>" class="btn btn-success">View Full Details</a>
         </div>
       </div>

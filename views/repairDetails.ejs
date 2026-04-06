@@ -38,6 +38,7 @@
         <p><strong>Issue Description:</strong> <%= repair.issue_description %></p>
         <p><strong>Status:</strong> <%= repair.status %></p>
         <p><strong>Storage Location:</strong> <%= repair.storage_location || '-' %></p>
+        <p><strong>Device Loan:</strong> <%= repair.device_loan || '-' %></p>
         <p><strong>Created At:</strong> <%= repair.created_at ? new Date(repair.created_at).toLocaleString() : '-' %></p>
         <p><strong>Updated At:</strong> <%= repair.updated_at ? new Date(repair.updated_at).toLocaleString() : '-' %></p>
       </div>

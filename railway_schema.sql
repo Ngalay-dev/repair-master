@@ -26,6 +26,7 @@ CREATE TABLE repairs (
     issue_description TEXT NOT NULL,
     status ENUM('Waiting for approval', 'In progress', 'Finished') NOT NULL DEFAULT 'Waiting for approval',
     storage_location VARCHAR(100),
+    device_loan VARCHAR(10) DEFAULT NULL,
     created_by INT NOT NULL,
     updated_by INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -147,3 +148,8 @@ VALUES
 (1, NULL, 'Waiting for approval', 2, 'Repair created'),
 (2, NULL, 'Waiting for approval', 2, 'Repair created'),
 (2, 'Waiting for approval', 'In progress', 2, 'Approved and started repair');
+
+-- =========================
+-- ALTER TABLE TO ADD DEVICE_LOAN COLUMN
+-- =========================
+ALTER TABLE repairs ADD COLUMN device_loan VARCHAR(10) DEFAULT NULL;

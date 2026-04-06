@@ -396,7 +396,8 @@ app.post('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
     issue_description,
     status,
     storage_location,
-    note_text
+    note_text,
+    device_loan
   } = req.body;
 
   if (!client_name || !client_email || !laptop_model || !issue_description || !status) {
@@ -413,8 +414,8 @@ app.post('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
 
     const repairSql = `
       INSERT INTO repairs
-      (repair_id, client_name, client_email, laptop_brand, laptop_model, serial_number, issue_description, status, storage_location, created_by, updated_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (repair_id, client_name, client_email, laptop_brand, laptop_model, serial_number, issue_description, status, storage_location, device_loan, created_by, updated_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     connection.query(
@@ -429,6 +430,7 @@ app.post('/repairs/add', checkAuthenticated, checkStaff, (req, res) => {
         issue_description.trim(),
         status,
         storage_location || null,
+        device_loan || null,
         req.session.user.id,
         req.session.user.id
       ],
@@ -556,7 +558,8 @@ app.post('/repairs/edit/:id', checkAuthenticated, checkStaff, (req, res) => {
     issue_description,
     status,
     storage_location,
-    note_text
+    note_text,
+    device_loan
   } = req.body;
 
   if (!client_name || !client_email || !laptop_model || !issue_description || !status) {
@@ -582,7 +585,7 @@ app.post('/repairs/edit/:id', checkAuthenticated, checkStaff, (req, res) => {
 
     const updateSql = `
       UPDATE repairs
-      SET client_name = ?, client_email = ?, laptop_brand = ?, laptop_model = ?, serial_number = ?, issue_description = ?, status = ?, storage_location = ?, updated_by = ?
+      SET client_name = ?, client_email = ?, laptop_brand = ?, laptop_model = ?, serial_number = ?, issue_description = ?, status = ?, storage_location = ?, device_loan = ?, updated_by = ?
       WHERE id = ?
     `;
 
@@ -597,6 +600,7 @@ app.post('/repairs/edit/:id', checkAuthenticated, checkStaff, (req, res) => {
         issue_description.trim(),
         status,
         storage_location || null,
+        device_loan || null,
         req.session.user.id,
         req.params.id
       ],

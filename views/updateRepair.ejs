@@ -78,6 +78,15 @@
       </div>
 
       <div class="mb-3">
+        <label for="device_loan" class="form-label">Device Loan <span style="color: #999; font-size: 0.85rem;">(Optional)</span></label>
+        <select id="device_loan" class="form-select" name="device_loan">
+          <option value="">Select Device Loan Status</option>
+          <option value="Yes" <%= repair.device_loan === 'Yes' ? 'selected' : '' %>>Yes</option>
+          <option value="No" <%= repair.device_loan === 'No' ? 'selected' : '' %>>No</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
         <label for="note_text" class="form-label">New Note</label>
         <textarea
           id="note_text"
